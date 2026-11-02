@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_AUDIT_VERSION: 0.22.1
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: rustup show active-toolchain || rustup toolchain install
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo install cargo-audit --locked --version "$CARGO_AUDIT_VERSION"
+      - run: cargo audit
+      - run: sh scripts/gitleaks.sh
+      - run: sh scripts/shellcheck.sh
+      - run: sh scripts/workflows.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: commit messages
+        env:
+          FROM: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TO: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ -n "$FROM" ] && git cat-file -e "$FROM^{commit}" 2>/dev/null; then
+            commits=$(git rev-list --no-merges "$FROM..$TO")
+          else
+            commits=$TO
+          fi
+          for c in $commits; do
+            git log -1 --format=%B "$c" > "$RUNNER_TEMP/msg"
+            sh scripts/commit-msg.sh "$RUNNER_TEMP/msg"
+          done
