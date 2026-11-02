@@ -9,5 +9,5 @@
 - Provider de demonstração que reproduz os mockups.
 - Regras de diagnóstico em Lua, num ambiente isolado, e tema configurável.
 - TUI com as abas Trace, Topology, Correlations, Observability e Settings.
-- CLI `peabiru` com `tui`, `trace`, `graph` e `rules check`.
+- CLI com `tui`, `trace`, `graph` e `rules check`, instalada como `pb` e, com o nome completo, como `peabiru`.
 - Lab kind (`labs/kind`) com dez cenários de falha, a sonda do lado A e o gabarito do que o Peabiru deve concluir em cada um.

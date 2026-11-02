@@ -5,11 +5,16 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Peabiru CLI: the `peabiru` binary (TUI, trace, graph dump, rules check)"
+description = "Peabiru CLI: the `pb` command, also installed as `peabiru` (TUI, trace, graph dump, rules check)"
+default-run = "pb"
+
+[[bin]]
+name = "pb"
+path = "src/bin/pb.rs"
 
 [[bin]]
 name = "peabiru"
-path = "src/main.rs"
+path = "src/bin/peabiru.rs"
 
 [dependencies]
 peabiru-core = { workspace = true }

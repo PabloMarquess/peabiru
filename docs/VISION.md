@@ -1017,7 +1017,7 @@ Potential consequences:
 Comando:
 
 ```
-peabiru trace \
+pb trace \
     --from aws://account-a/ec2/i-01234 \
     --to k8s://production/payments \
     --port 443

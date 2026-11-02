@@ -1,4 +1,4 @@
-//! Tabela de texto alinhada à esquerda (`peabiru graph`).
+//! Tabela de texto alinhada à esquerda (`pb graph`).
 
 /// Renderiza `headers` + `rows` com colunas separadas por dois espaços,
 /// cada coluna com a largura do maior valor. Sem linhas → só o cabeçalho.

@@ -30,9 +30,9 @@ Requer Rust 1.88+ (edição 2021). O Lua 5.4 é compilado junto (`mlua`
 vendored), sem dependências de sistema.
 
 ```sh
-cargo build --release                 # binário em target/release/peabiru
+cargo build --release                 # binários em target/release/pb e target/release/peabiru
 
-cargo run -p peabiru-cli              # = peabiru tui (interface interativa)
+cargo run -p peabiru-cli              # = pb tui (interface interativa)
 cargo run -p peabiru-cli -- trace --from web-frontend-7f9c8c --to api.prod.svc.cluster.local
 cargo run -p peabiru-cli -- trace --from web-frontend-7f9c8c --to api.prod.svc.cluster.local --json
 cargo run -p peabiru-cli -- graph     # dump do grafo (--json para JSON)
@@ -58,13 +58,17 @@ cargo run -q -p peabiru-cli -- tui --render-once --size 100x30 > crates/peabiru-
 Subcomandos e opções:
 
 ```
-peabiru                                  # = peabiru tui
-peabiru tui [--provider demo] [--render-once --size WxH [--ansi]]
-peabiru trace --from <selector> --to <selector|fqdn> [--port 443] [--protocol HTTPS] [--json]
-peabiru graph [--json]
-peabiru rules check <FILE>...
-peabiru --version
+pb                                       # = pb tui
+pb tui [--provider demo] [--render-once --size WxH [--ansi]]
+pb trace --from <selector> --to <selector|fqdn> [--port 443] [--protocol HTTPS] [--json]
+pb graph [--json]
+pb rules check <FILE>...
+pb --version
 ```
+
+`pb` é o comando principal. `peabiru` é o mesmo comando com o nome completo:
+`cargo install --path crates/peabiru-cli` instala os dois, e a ajuda mostra o
+nome que você digitou.
 
 Opções globais (antes ou depois do subcomando): `--config PATH` (config.lua),
 `--rules PATH` (arquivo de regras extra, repetível) e `--no-bg` (não pinta o
@@ -120,7 +124,7 @@ As regras rodam **fora do datapath**: só sobre o resultado de um trace, num
 sandbox Lua 5.4 (sem `os`, `io`, `package`, `require`, `load`). Cada arquivo
 é executado uma vez por trace, num ambiente próprio. As regras padrão estão em
 [`rules/default.lua`](rules/default.lua); arquivos extras entram por
-`config.lua` ou `--rules`, e `peabiru rules check arquivo.lua` executa-os
+`config.lua` ou `--rules`, e `pb rules check arquivo.lua` executa-os
 (junto com as padrão) contra o trace demo e imprime `[SEVERIDADE] regra:
 mensagem` por finding (no demo, `[WARNING] default.lua: Possible traffic
 tromboning`).
@@ -156,7 +160,7 @@ crates/
 ├── peabiru-discovery/   # traits Provider/Sensor, registro e o provider "demo" (fixture dos mockups)
 ├── peabiru-lua/         # runtime Lua sandboxed: regras de diagnóstico + config/tema
 ├── peabiru-tui/         # interface ratatui (layout dos mockups, snapshot para testes)
-└── peabiru-cli/         # binário `peabiru`
+└── peabiru-cli/         # comandos `pb` e `peabiru`
 ```
 
 `peabiru-core` não depende de nenhum outro crate nem de provider específico;

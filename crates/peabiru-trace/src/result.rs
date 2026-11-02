@@ -183,7 +183,7 @@ impl TraceResult {
         self.hops.iter().map(|h| h.metrics.rst).sum()
     }
 
-    /// Saída texto no estilo de VISION §24 (para `peabiru trace` sem `--json`):
+    /// Saída texto no estilo de VISION §24 (para `pb trace` sem `--json`):
     ///
     /// ```text
     /// PEABIRU TRACE #1

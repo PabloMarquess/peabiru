@@ -1,4 +1,4 @@
-//! Testes de integração do binário `peabiru` (ARCHITECTURE §7).
+//! Testes de integração dos binários `pb` e `peabiru` (ARCHITECTURE §7).
 
 use std::process::{Command, Output};
 
@@ -7,12 +7,38 @@ use std::process::{Command, Output};
 const NO_CONFIG: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/no-such-config.lua");
 const DEFAULT_RULES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../rules/default.lua");
 
-fn peabiru(args: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_peabiru"))
+fn run(bin: &str, args: &[&str]) -> Output {
+    Command::new(bin)
         .args(["--config", NO_CONFIG])
         .args(args)
         .output()
-        .expect("failed to run peabiru")
+        .expect("failed to run the CLI")
+}
+
+fn pb(args: &[&str]) -> Output {
+    run(env!("CARGO_BIN_EXE_pb"), args)
+}
+
+fn peabiru(args: &[&str]) -> Output {
+    run(env!("CARGO_BIN_EXE_peabiru"), args)
+}
+
+#[test]
+fn peabiru_is_the_same_command_as_pb() {
+    assert_eq!(
+        stdout(&peabiru(&["--version"])),
+        stdout(&pb(&["--version"]))
+    );
+    let rules = ["rules", "check", DEFAULT_RULES];
+    assert_eq!(stdout(&peabiru(&rules)), stdout(&pb(&rules)));
+
+    let short = stdout(&pb(&["--help"]));
+    let full = stdout(&peabiru(&["--help"]));
+    assert!(short.contains("Usage: pb [OPTIONS] [COMMAND]"), "{short}");
+    assert!(
+        full.contains("Usage: peabiru [OPTIONS] [COMMAND]"),
+        "{full}"
+    );
 }
 
 fn stdout(out: &Output) -> String {
@@ -25,14 +51,14 @@ fn stderr(out: &Output) -> String {
 
 #[test]
 fn version_prints_name_and_version() {
-    let out = peabiru(&["--version"]);
+    let out = pb(&["--version"]);
     assert_eq!(out.status.code(), Some(0));
     assert_eq!(stdout(&out).trim(), "peabiru 0.1.0");
 }
 
 #[test]
 fn trace_json_has_five_hops() {
-    let out = peabiru(&[
+    let out = pb(&[
         "trace",
         "--from",
         "web-frontend-7f9c8c",
@@ -54,7 +80,7 @@ fn trace_json_has_five_hops() {
 
 #[test]
 fn trace_text_renders_ascii_path() {
-    let out = peabiru(&[
+    let out = pb(&[
         "trace",
         "--from",
         "web-frontend-7f9c8c",
@@ -77,7 +103,7 @@ fn trace_text_renders_ascii_path() {
 
 #[test]
 fn trace_unknown_source_exits_3() {
-    let out = peabiru(&["trace", "--from", "nope", "--to", "x"]);
+    let out = pb(&["trace", "--from", "nope", "--to", "x"]);
     assert_eq!(out.status.code(), Some(3));
     assert!(stderr(&out).contains("source not found: nope"));
     assert!(stdout(&out).is_empty());
@@ -85,13 +111,13 @@ fn trace_unknown_source_exits_3() {
 
 #[test]
 fn trace_missing_args_exits_2() {
-    let out = peabiru(&["trace", "--from", "a"]);
+    let out = pb(&["trace", "--from", "a"]);
     assert_eq!(out.status.code(), Some(2));
 }
 
 #[test]
 fn tui_render_once_prints_reference_frame() {
-    let out = peabiru(&["tui", "--render-once", "--size", "156x50"]);
+    let out = pb(&["tui", "--render-once", "--size", "156x50"]);
     assert_eq!(out.status.code(), Some(0), "stderr: {}", stderr(&out));
     let frame = stdout(&out);
     assert!(frame.contains("TRACE GRAPH"), "{frame}");
@@ -103,13 +129,13 @@ fn tui_render_once_prints_reference_frame() {
 
 #[test]
 fn tui_render_once_ansi_and_no_bg() {
-    let out = peabiru(&["tui", "--render-once", "--ansi"]);
+    let out = pb(&["tui", "--render-once", "--ansi"]);
     assert_eq!(out.status.code(), Some(0));
     let frame = stdout(&out);
     assert!(frame.contains("\x1b[0;"));
     assert!(frame.contains("48;2;11;14;20"), "default bg is painted");
 
-    let out = peabiru(&["--no-bg", "tui", "--render-once", "--ansi"]);
+    let out = pb(&["--no-bg", "tui", "--render-once", "--ansi"]);
     assert_eq!(out.status.code(), Some(0));
     assert!(
         !stdout(&out).contains("48;2;11;14;20"),
@@ -119,16 +145,16 @@ fn tui_render_once_ansi_and_no_bg() {
 
 #[test]
 fn tui_bad_size_and_provider_exit_2() {
-    let out = peabiru(&["tui", "--render-once", "--size", "156"]);
+    let out = pb(&["tui", "--render-once", "--size", "156"]);
     assert_eq!(out.status.code(), Some(2));
-    let out = peabiru(&["tui", "--render-once", "--provider", "nope"]);
+    let out = pb(&["tui", "--render-once", "--provider", "nope"]);
     assert_eq!(out.status.code(), Some(2));
     assert!(stderr(&out).contains("unknown provider 'nope'"));
 }
 
 #[test]
 fn graph_table_and_json() {
-    let out = peabiru(&["graph"]);
+    let out = pb(&["graph"]);
     assert_eq!(out.status.code(), Some(0), "stderr: {}", stderr(&out));
     let text = stdout(&out);
     assert!(text.starts_with("NAME"), "{text}");
@@ -136,7 +162,7 @@ fn graph_table_and_json() {
     assert!(text.contains("aws-alb"), "{text}");
     assert!(text.contains("load_balancer"), "{text}");
 
-    let out = peabiru(&["graph", "--json"]);
+    let out = pb(&["graph", "--json"]);
     assert_eq!(out.status.code(), Some(0));
     let value: serde_json::Value = serde_json::from_slice(&out.stdout).expect("valid JSON");
     assert_eq!(value["entities"].as_object().map(|m| m.len()), Some(10));
@@ -145,7 +171,7 @@ fn graph_table_and_json() {
 
 #[test]
 fn rules_check_default_rules() {
-    let out = peabiru(&["rules", "check", DEFAULT_RULES]);
+    let out = pb(&["rules", "check", DEFAULT_RULES]);
     assert_eq!(out.status.code(), Some(0), "stderr: {}", stderr(&out));
     let text = stdout(&out);
     assert!(
@@ -159,7 +185,7 @@ fn rules_check_default_rules() {
 
 #[test]
 fn rules_check_missing_file_exits_1() {
-    let out = peabiru(&["rules", "check", "/no/such/rules.lua"]);
+    let out = pb(&["rules", "check", "/no/such/rules.lua"]);
     assert_eq!(out.status.code(), Some(1));
     assert!(stderr(&out).contains("cannot load rules file"));
 }

@@ -1,5 +1,5 @@
 //! Render para string via `TestBackend` (base dos testes de snapshot e do
-//! `peabiru tui --render-once`) e o estado determinístico que ambos
+//! `pb tui --render-once`) e o estado determinístico que ambos
 //! renderizam (`prepare`, `fixed_base`, `fixed_clock`).
 
 use chrono::{DateTime, TimeDelta, Utc};
@@ -38,7 +38,7 @@ pub fn fixed_clock() -> Timestamp {
 }
 
 /// Leva `app` ao estado final de um run para um render determinístico, o
-/// mesmo de `peabiru tui --render-once` e do teste de snapshot: fixa o
+/// mesmo de `pb tui --render-once` e do teste de snapshot: fixa o
 /// relógio em `clock`, `run_trace()`, esgota `sensor` via `on_tick` (todos
 /// os eventos entram no EVENTS; `sensor` deve ser de intervalo zero),
 /// encerra o run (`Done`, STATUS `Completed`) e seleciona o primeiro hop

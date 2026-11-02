@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-/// O que o usuário pediu: `peabiru trace --from A --to B --port 443`.
+/// O que o usuário pediu: `pb trace --from A --to B --port 443`.
 ///
 /// `from`/`to` são selectors aceitos por `Graph::resolve` (id, nome, `ip`,
 /// `ip:port`, hostname). `to` pode ser um FQDN lógico como

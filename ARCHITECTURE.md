@@ -28,7 +28,7 @@ peabiru/
     ├── peabiru-discovery/         # trait Provider/Sensor + provider "demo"
     ├── peabiru-lua/               # runtime Lua: regras de diagnóstico + config/tema
     ├── peabiru-tui/               # interface ratatui (visual dos mockups)
-    └── peabiru-cli/               # binário `peabiru`
+    └── peabiru-cli/               # comandos `pb` e `peabiru`
 ```
 
 Grafo de dependências (setas = "depende de"):
@@ -325,7 +325,7 @@ pub struct TraceResult {
 }
 impl TraceResult {
     pub fn hop_for(&self, id: &str) -> Option<&Hop>;
-    pub fn render_ascii(&self) -> String;   // saída texto do VISION §24 (para `peabiru trace` sem --json)
+    pub fn render_ascii(&self) -> String;   // saída texto do VISION §24 (para `pb trace` sem --json)
 }
 
 pub struct TraceEngine;
@@ -507,7 +507,7 @@ Flow Logs 90, Kubernetes API/DNS 90, AWS Route Table 80, `route inference`
 60/65/55 (redis/orders-db/payments-svc); a aresta istio → nat-gw usa Discovered
 "AWS Route Table". As arestas `Correlated` levam as **duas** evidências reais
 que a correlação junta (fontes observacionais distintas ⇒ `status()` =
-`Correlated` em `peabiru graph` e na Topology): uma `Observed` com confiança
+`Correlated` em `pb graph` e na Topology): uma `Observed` com confiança
 igual ao score (peso 1.0 ⇒ `edge.confidence()` = 92/81/73) e a segunda com
 confiança efetiva menor (aws-alb↔app-svc: eBPF (node/ip-10-0-2-34) 92 + VPC
 Flow Logs 90; web-frontend↔orders-db: eBPF (node/ip-10-42-1-1) 81 + VPC Flow
@@ -835,7 +835,7 @@ pub mod snapshot {
 `prepare` fixa `app.fixed_clock = Some(clock)`, chama `run_trace()`, esgota
 o sensor via `on_tick` (até um tick sem eventos novos; máx. 100), encerra o
 run (`Done`, STATUS `Completed`) e seleciona o primeiro hop `Correlated` (o
-`aws-alb` do mockup). `peabiru tui --render-once` e `tests/snapshot.rs`
+`aws-alb` do mockup). `pb tui --render-once` e `tests/snapshot.rs`
 constroem o **mesmo** estado (`App::new(demo::graph_from(fixed_base()),
 ..)` + `DemoSensor::with_base(0, fixed_base())` + `prepare(.., fixed_clock())`),
 e por isso o render é determinístico: horas em UTC (`12:41:02`…), `LAST
@@ -969,14 +969,19 @@ Precisões implementadas em `peabiru-tui` (aditivas ao contrato acima):
 ## 7. peabiru-cli
 
 ```
-peabiru                                  # = peabiru tui
-peabiru tui [--provider demo] [--config FILE] [--rules FILE]... [--no-bg]
-            [--render-once --size WxH [--ansi]]
-peabiru trace --from <selector> --to <selector|fqdn> [--port 443] [--protocol HTTPS] [--json] [--rules FILE]...
-peabiru graph [--json]                   # dump do grafo global (tabela ou JSON)
-peabiru rules check <FILE>...            # carrega e executa contra o trace demo, imprime findings
-peabiru --version
+pb                                       # = pb tui
+pb tui [--provider demo] [--config FILE] [--rules FILE]... [--no-bg]
+       [--render-once --size WxH [--ansi]]
+pb trace --from <selector> --to <selector|fqdn> [--port 443] [--protocol HTTPS] [--json] [--rules FILE]...
+pb graph [--json]                        # dump do grafo global (tabela ou JSON)
+pb rules check <FILE>...                 # carrega e executa contra o trace demo, imprime findings
+pb --version
 ```
+
+O crate tem uma lib (`src/lib.rs`, com `peabiru_cli::main()`) e dois binários
+finos que a chamam: `pb` (o principal, `default-run`) e `peabiru` (o nome
+completo). O uso e a ajuda mostram o nome digitado; `--version` imprime
+`peabiru <versão>` nos dois.
 
 Saída JSON de `trace` = `serde_json::to_string_pretty(&TraceResult)`.
 Códigos de saída: 0 ok; 2 erro de argumento; 3 trace falhou (sem caminho).
@@ -1036,7 +1041,7 @@ Precisões implementadas em `peabiru-cli` (aditivas ao contrato acima):
   (`loaded N rule file(s): ...; M finding(s) on the demo trace`) em stderr.
 - **Códigos de saída**: 0 ok; 1 erro de execução (`error: <anyhow>` em
   stderr); 2 argumento (clap); 3 `TraceError`.
-- **Testes** (`tests/cli.rs`): rodam o binário (`CARGO_BIN_EXE_peabiru`) com
+- **Testes** (`tests/cli.rs`): rodam os binários (`CARGO_BIN_EXE_pb` e `CARGO_BIN_EXE_peabiru`) com
   `--config` apontando para um arquivo inexistente, isolando do `config.lua`
   do usuário.
 

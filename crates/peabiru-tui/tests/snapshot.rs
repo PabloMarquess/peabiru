@@ -1,5 +1,5 @@
 //! Snapshots do Tab Trace (ARCHITECTURE §6.6): o estado de
-//! `peabiru tui --render-once` (grafo demo e eventos na base fixa, trace
+//! `pb tui --render-once` (grafo demo e eventos na base fixa, trace
 //! concluído, relógio fixo) renderizado a 156×50 e 100×30 e comparado com
 //! `tests/snapshots/trace_<WxH>.txt`. Em divergência, o teste falha com um
 //! diff por linha. Para regenerar os arquivos:
@@ -27,7 +27,7 @@ const UPDATE_ENV: &str = "PEABIRU_UPDATE_SNAPSHOTS";
 /// Máximo de linhas divergentes listadas na mensagem de falha.
 const MAX_DIFF_LINES: usize = 60;
 
-/// O mesmo estado de `peabiru tui --render-once --size WxH`.
+/// O mesmo estado de `pb tui --render-once --size WxH`.
 fn render_once(width: u16, height: u16) -> String {
     let base = snapshot::fixed_base();
     let mut app = App::new(

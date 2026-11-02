@@ -91,7 +91,7 @@ fn demo_trace_reproduces_the_mockup() {
     assert_eq!(trace.correlations[2].b_name, "redis");
     assert_eq!(trace.correlations[2].basis, "timing correlation");
     // Nada correlacionado é exibido como observado: toda aresta Correlated
-    // junta duas fontes e sai com status Correlated (`peabiru graph`, Topology).
+    // junta duas fontes e sai com status Correlated (`pb graph`, Topology).
     for (_, e) in graph
         .edges()
         .filter(|(_, e)| e.relation == Relation::Correlated)
