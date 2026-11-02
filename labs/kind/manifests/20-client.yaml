@@ -1,0 +1,25 @@
+# Lado A: o pod que tenta falar com o banco, no nó "app". A imagem traz dig,
+# bash e as ferramentas que uma pessoa usaria para depurar na mão.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: @APP_NS@
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      nodeSelector:
+        peabiru.lab/role: app
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: client
+          image: @TOOLS_IMAGE@
+          imagePullPolicy: IfNotPresent
+          command: [sleep, "2147483647"]

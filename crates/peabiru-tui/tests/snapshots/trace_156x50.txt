@@ -1,0 +1,50 @@
+╭──────────────────────────╮╭────────────────────────────────────────────────────────────────────────────────────────────╮╭────────────────────────────────╮
+│ PEABIRU  NETWORK TRACING ││ [1] Trace  [2] Topology  [3] Correlations  [4] Observability  [5] Settings  ? Help  q Quit ││ connected ●  peabiru.local:443 │
+╰──────────────────────────╯╰────────────────────────────────────────────────────────────────────────────────────────────╯╰────────────────────────────────╯
+╭ TRACE TARGET ─────────────────────────╮╭ TRACE GRAPH ────────────────────────────────────────────────────────╮╭ NODE DETAILS ────────────────────────────╮
+│ api.prod.svc.cluster.local            ││                                                                     ││ ◇ aws-alb  [CORRELATED]                  │
+│ PORT: 443 (HTTPS)                     ││                            ●  web-frontend-7f9c8c                   ││                                          │
+│ FROM: web-frontend-7f9c8c             ││                               10.42.1.15:51542                      ││ ADDRESS      alb2c3.elb.amazonaws.com    │
+│ ───────────────────────────────────── ││                            │                                        ││ IP:PORT      52.95.23.10:443             │
+│ [R] Run Trace                         ││                            ▼                                        ││ TYPE         load_balancer (aws_alb)     │
+╰───────────────────────────────────────╯│                            ●  kube-proxy                            ││ AS           AS16509 (Amazon.com, Inc.)  │
+╭ TRACE SUMMARY ────────────────────────╮│                               10.42.1.1                             ││ REGION       us-east-1                   │
+│ STATUS       Completed                ││                            │                                        ││ ──────────────────────────────────────── │
+│ DURATION     2.843s                   ││                            ▼                                        ││ STATUS       reachable                   │
+│ HOPS         5                        ││    ╭╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌●  istio-ingressgateway                  ││ SOURCE       2 sensors                   │
+│ OBSERVED     ● 5 (100%)               ││    ╎                          10.42.0.7:15001                       ││ LAST SEEN    1.700s ago                  │
+│ INFERRED     ○ 0 (0%)                 ││    ○  nat-gw               │                                        ││ CONFIDENCE   92%  ■■■■■■■■■■■■           │
+│ CORRELATIONS 3                        ││       10.0.1.5             ▼                                        ││ ──────────────────────────────────────── │
+│ CONFIDENCE   92%                      ││                            ◇  aws-alb                               ││ EVIDENCE (2)                             │
+│              ■■■■■■■■■■■■             ││                               alb2c3.elb.amazonaws.com              ││ ● eBPF (node/ip-10-0-1-25)               │
+╰───────────────────────────────────────╯│                               52.95.23.10:443                       ││ ● VPC Flow Logs                          │
+╭ LEGEND ───────────────────────────────╮│                            │                                        ││                                          │
+│ ● observed node                       ││                            ▼                                        ││ [d] view details    [y] yolo mode        │
+│ ○ inferred node                       ││    ╭╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌●  app-svc╌╌╌╌╌╌╌╌╌╌╌╮                   │╰──────────────────────────────────────────╯
+│ ◇ correlated node                     ││    ╎                       ╎  10.0.2.34:443     ╎                   │╭ CORRELATIONS (3) ────────────────────────╮
+│ ◆ probe point                         ││    ○  redis                ╎                    ◇  orders-db        ││ ◇ aws-alb              <-> app-svc   92% │
+│ ── observed path                      ││       10.0.3.8:6379        ○  payments-svc         10.0.4.12:5432   ││ ◇ web-frontend-7f9c8c  <-> orders-db 81% │
+│ ╌╌ inferred path                      ││                               10.0.2.55:8080                        ││ ◇ istio-ingressgateway <-> redis     73% │
+│ ┄┄ possible path                      ││                                                                     ││                                          │
+│ → direction                           ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+│                                       ││                                                                     ││                                          │
+╰───────────────────────────────────────╯╰─────────────────────────────────────────────────────────────────────╯╰──────────────────────────────────────────╯
+╭ EVENTS ────────────────────────────────────────────────────────────────────────────────── [p] pause ╮╭ KEYMAP ───────────────────────────────────────────╮
+│ 12:41:02 ● eBPF         connect  kube-proxy:15001           → istio-ingressgateway:15001    0.892ms ││ r     run trace       d     node details          │
+│ 12:41:02 ◇ correlation  match    istio-ingressgateway       ↔ aws-alb                           92% ││ tab   next panel      y     yolo mode             │
+│ 12:41:03 ● flow_log     accept   52.95.23.10:443            → 10.0.2.34:443                 1.103ms ││ ↑/↓   navigate        p     pause events          │
+│ 12:41:04 ○ inference    route    10.0.2.34:443              → 10.0.4.12:5432             (inferred) ││ enter select          q     quit                  │
+│ 12:41:04 ○ inference    route    10.0.2.34:443              → 10.0.3.8:6379              (inferred) ││                                                   │
+│ 12:41:04 ○ discovery    resolve  api.prod.svc.cluster.local → app-svc                Kubernetes DNS ││                                                   │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────╯╰───────────────────────────────────────────────────╯
+ peabiru v0.1.0                                   environment: prod  │  cluster: prod-e1  │  user: admin                                   press ? for help

@@ -1,0 +1,17 @@
+[package]
+name = "peabiru-discovery"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Peabiru discovery: Provider/Sensor traits and the demo provider fixture"
+
+[dependencies]
+peabiru-core = { workspace = true }
+peabiru-trace = { workspace = true }
+anyhow = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

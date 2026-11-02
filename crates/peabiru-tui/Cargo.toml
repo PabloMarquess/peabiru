@@ -1,0 +1,18 @@
+[package]
+name = "peabiru-tui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Peabiru TUI: ratatui interface for the trace engine (mockup layout)"
+
+[dependencies]
+peabiru-core = { workspace = true }
+peabiru-trace = { workspace = true }
+peabiru-discovery = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+chrono = { workspace = true }
+anyhow = { workspace = true }
+unicode-width = { workspace = true }

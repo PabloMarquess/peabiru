@@ -1,0 +1,17 @@
+[package]
+name = "peabiru-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Peabiru core: normalized model, temporal graph, evidence and events"
+
+[dependencies]
+serde = { workspace = true }
+indexmap = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
