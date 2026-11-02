@@ -17,7 +17,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context};
-use mlua::{String as LuaString, Table, Value};
+use mlua::{LuaString, Table, Value};
 use serde::{Deserialize, Serialize};
 
 use crate::rules::{lua_err, new_sandboxed_lua};

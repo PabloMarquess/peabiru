@@ -26,7 +26,7 @@ Lua e a interface já funcionam sobre ela.
 
 ## Build e execução
 
-Requer Rust 1.85+ (edição 2021). O Lua 5.4 é compilado junto (`mlua`
+Requer Rust 1.88+ (edição 2021). O Lua 5.4 é compilado junto (`mlua`
 vendored), sem dependências de sistema.
 
 ```sh

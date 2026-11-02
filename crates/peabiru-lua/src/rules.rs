@@ -172,7 +172,7 @@ impl RuleEngine {
         let env = lua.create_table()?;
         let meta = lua.create_table()?;
         meta.raw_set("__index", lua.globals())?;
-        env.set_metatable(Some(meta));
+        env.set_metatable(Some(meta))?;
         env.raw_set("_G", env.clone())?;
         env.raw_set(
             "finding",
