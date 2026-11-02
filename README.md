@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/brand/peabiru-banner.svg" width="720" alt="Emblema do Peabiru em pixel art: uma bússola com sol nascente, araucária e uma trilha de terra que leva até uma pegada de onça, ao lado do nome peabiru.">
+</p>
+
 # Peabiru
 
 Peabiru é uma ferramenta de troubleshooting e observabilidade de rede que
