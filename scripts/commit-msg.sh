@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
 
-header=$(grep -v '^#' "$1" | head -n 1)
+# With `git commit -v` the diff follows the scissors line; it is not part of the message.
+msg=$(sed '/^# -* >8 -*$/,$d' "$1")
+header=$(printf '%s\n' "$msg" | grep -v '^#' | head -n 1)
 
 case "$header" in
   'Merge '* | 'Revert "'* | 'fixup! '* | 'squash! '*) ;;
@@ -14,7 +16,13 @@ case "$header" in
     ;;
 esac
 
-if grep -qiE 'co-authored-by:.*(claude|anthropic)|generated (with|by) .*claude|noreply@anthropic\.com' "$1"; then
+if printf '%s\n' "$msg" | grep -qiE 'co-authored-by:.*(claude|anthropic)|generated (with|by) .*claude|noreply@anthropic\.com'; then
   echo "commit-msg: AI attribution is not allowed" >&2
+  exit 1
+fi
+
+# Lines starting with '#' are checked too: `git commit -m` keeps them in the message.
+if printf '%s\n' "$msg" | LC_ALL=C grep -qF "$(printf '\342\200\224')"; then
+  echo "commit-msg: the em dash (U+2014) is not used in this repository" >&2
   exit 1
 fi

@@ -11,6 +11,7 @@ if [ -n "$partial" ]; then
 fi
 
 cargo fmt --all -- --check
+sh scripts/no-em-dash.sh --staged
 sh scripts/gitleaks.sh --staged
 
 staged=$(git diff --cached --name-only)

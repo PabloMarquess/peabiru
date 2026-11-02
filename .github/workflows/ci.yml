@@ -32,6 +32,7 @@ jobs:
       - run: cargo test --workspace --locked
       - run: cargo install cargo-audit --locked --version "$CARGO_AUDIT_VERSION"
       - run: cargo audit
+      - run: sh scripts/no-em-dash.sh
       - run: sh scripts/gitleaks.sh
       - run: sh scripts/shellcheck.sh
       - run: sh scripts/workflows.sh
@@ -43,7 +44,7 @@ jobs:
           TO: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [ -n "$FROM" ] && git cat-file -e "$FROM^{commit}" 2>/dev/null; then
-            commits=$(git rev-list --no-merges "$FROM..$TO")
+            commits=$(git rev-list "$FROM..$TO")
           else
             commits=$TO
           fi
@@ -51,3 +52,10 @@ jobs:
             git log -1 --format=%B "$c" > "$RUNNER_TEMP/msg"
             sh scripts/commit-msg.sh "$RUNNER_TEMP/msg"
           done
+      - name: pull request title
+        if: github.event_name == 'pull_request'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          printf '%s\n' "$TITLE" > "$RUNNER_TEMP/title"
+          sh scripts/commit-msg.sh "$RUNNER_TEMP/title"
