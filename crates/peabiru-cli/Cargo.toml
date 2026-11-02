@@ -1,0 +1,22 @@
+[package]
+name = "peabiru-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Peabiru CLI: the `peabiru` binary (TUI, trace, graph dump, rules check)"
+
+[[bin]]
+name = "peabiru"
+path = "src/main.rs"
+
+[dependencies]
+peabiru-core = { workspace = true }
+peabiru-trace = { workspace = true }
+peabiru-discovery = { workspace = true }
+peabiru-lua = { workspace = true }
+peabiru-tui = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+serde_json = { workspace = true }

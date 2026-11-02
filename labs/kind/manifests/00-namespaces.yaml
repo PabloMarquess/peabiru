@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: @APP_NS@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: @DB_NS@

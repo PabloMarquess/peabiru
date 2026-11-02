@@ -1,0 +1,17 @@
+[package]
+name = "peabiru-trace"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Peabiru trace engine: path finding, confidence and correlations over the graph"
+
+[dependencies]
+peabiru-core = { workspace = true }
+serde = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

@@ -1,0 +1,45 @@
+# Banco dentro do cluster, no nó "db". Sem senha: a sonda só fala o início do
+# protocolo do Postgres e o banco só é alcançável dentro do kind.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: @DB_NS@
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        peabiru.lab/role: db
+      containers:
+        - name: postgres
+          image: @PG_IMAGE@
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: trust
+          ports:
+            - containerPort: @DB_PORT@
+          readinessProbe:
+            exec:
+              command: [pg_isready, -U, postgres]
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: @DB_NS@
+spec:
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: @DB_PORT@
+      targetPort: @DB_PORT@

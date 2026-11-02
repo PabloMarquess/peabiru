@@ -1,0 +1,30 @@
+╭─────────╮╭────────────────────────────────────────────────────────────────────────╮╭─────────────╮
+│ PEABIRU ││ [1] Trace [2] Topology [3] Correlations [4] Observability [5] Settings ││ connected ● │
+╰─────────╯╰────────────────────────────────────────────────────────────────────────╯╰─────────────╯
+╭ TRACE TARGET ──────────╮╭ TRACE GRAPH ───────────────────────────────╮╭ NODE DETAILS ────────────╮
+│ api.prod.svc.cluster.… ││                     10.42.1.1        ↑ more││ ◇ aws-alb  [CORRELATED]  │
+│ PORT: 443 (HTTPS)      ││                  │                         ││ ADDRESS      alb2c3.elb… │
+│ FROM: web-frontend-7f… ││                  ▼                         ││ IP:PORT      52.95.23.1… │
+│ ────────────────────── ││  ╭╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌●  istio-ingressgateway   ││ TYPE         load_balan… │
+│ [R] Run Trace          ││  ╎                  10.42.0.7:15001        ││ AS           AS16509 (A… │
+╰────────────────────────╯│  ○  nat-gw       │                         ││ REGION       us-east-1   │
+╭ TRACE SUMMARY ─────────╮│     10.0.1.5     ▼                         ││ ──────────────────────── │
+│ STATUS       Completed ││                  ◇  aws-alb                ││ STATUS       reachable   │
+│ DURATION     2.843s    ││                     alb2c3.elb.amazonaws.c…││ SOURCE       2 sensors   │
+│ HOPS         5         ││                     52.95.23.10:443        ││ LAST SEEN    1.700s ago  │
+│ OBSERVED     ● 5 (100… ││                  │                         ││ CONFIDENCE   92%  ■■■■■… │
+│ INFERRED     ○ 0 (0%)  ││                  ▼                         ││ ──────────────────────── │
+│ CORRELATIONS 3         ││  ╭╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌●  app-svc                ││ EVIDENCE (2)             │
+│ CONFIDENCE   92%       ││  ╎               ╎  10.0.2.34:443          ││ ● eBPF (node/ip-10-0-1-… │
+│                        ││  ◇  orders-db    ╎                         ││ ● VPC Flow Logs          │
+│                        ││  ╎  10.0.4.12:5… ○  redis            ↓ more││ [d] details  [y] yolo    │
+╰────────────────────────╯╰────────────────────────────────────────────╯╰──────────────────────────╯
+╭ EVENTS ───────────────────────────────────────────── [p] pause ╮╭ KEYMAP ────────────────────────╮
+│ 12:41:02 ● eBPF         connect  kube-proxy:1… → istio-ingres… ││ r     run trace                │
+│ 12:41:02 ◇ correlation  match    istio-ingres… ↔ aws-alb       ││ tab   next panel               │
+│ 12:41:03 ● flow_log     accept   52.95.23.10:… → 10.0.2.34:443 ││ ↑/↓   navigate                 │
+│ 12:41:04 ○ inference    route    10.0.2.34:443 → 10.0.4.12:54… ││ enter select                   │
+│ 12:41:04 ○ inference    route    10.0.2.34:443 → 10.0.3.8:6379 ││ d     node details             │
+│ 12:41:04 ○ discovery    resolve  api.prod.svc… → app-svc       ││ y     yolo mode                │
+╰────────────────────────────────────────────────────────────────╯╰────────────────────────────────╯
+ peabiru v0.1.0       environment: prod  │  cluster: prod-e1  │  user: admin       press ? for help
