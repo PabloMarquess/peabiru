@@ -35,7 +35,7 @@ ratatui = "0.30"
 crossterm = "0.29"
 unicode-width = "0.2"
 mlua = { version = "0.12", features = ["lua54", "vendored"] }
-dirs = "6"
+dirs = "7"
 
 [profile.release]
 lto = "thin"
